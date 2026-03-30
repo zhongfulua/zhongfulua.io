@@ -58,7 +58,7 @@ class HomePage extends StatelessWidget {
           // 3. 滚动排行榜区域 (4名及以后) - 极简灰白
           Expanded(
             child: ListView.builder(
-              itemCount: 10,
+              itemCount: 7,
               itemBuilder: (context, index) {
                 int rank = index + 4;
                 return ListTile(

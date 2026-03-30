@@ -153,7 +153,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 }
 
-// --- 3. 忘记密码页面 ---
+// --- 3. 忘记密码页面 (优化后的布局) ---
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
 
@@ -172,11 +172,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     String confP = _confirmPassController.text.trim();
 
     if (!_userDatabase.containsKey(user)) {
-      _showMessage("User not found!");
+      _showMessage("User does not exist!");
       return;
     }
-    if (newP != confP || newP.isEmpty) {
-      _showMessage("Passwords do not match or empty!");
+    if (newP.isEmpty || newP != confP) {
+      _showMessage("Passwords do not match or are empty!");
       return;
     }
 
@@ -192,28 +192,74 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Reset Password")),
+      backgroundColor: Colors.white, // 确保背景纯白
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(40.0),
+        // 使用和登录页一样的左右大边距 (40)
+        padding: const EdgeInsets.symmetric(horizontal: 40.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(controller: _userController, decoration: const InputDecoration(labelText: "Your Username")),
-              TextField(controller: _newPassController, obscureText: true, decoration: const InputDecoration(labelText: "New Password")),
-              TextField(controller: _confirmPassController, obscureText: true, decoration: const InputDecoration(labelText: "Confirm New Password")),
+              const SizedBox(height: 20),
+              const Text(
+                "Reset\nPassword",
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, height: 1.2),
+              ),
               const SizedBox(height: 40),
+              
+              // 使用统一的输入框样式
+              _buildResetField("Username", controller: _userController),
+              const SizedBox(height: 20),
+              _buildResetField("New Password", controller: _newPassController, isObscure: true),
+              const SizedBox(height: 20),
+              _buildResetField("Confirm New Password", controller: _confirmPassController, isObscure: true),
+              
+              const SizedBox(height: 60),
+              
+              // 统一的大按钮
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 55,
                 child: ElevatedButton(
                   onPressed: _resetPassword,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black, foregroundColor: Colors.white),
-                  child: const Text("Update Password"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  child: const Text("Update Password", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // 这里的样式要和登录页的 _buildBlackTextField 保持一致
+  Widget _buildResetField(String hint, {required TextEditingController controller, bool isObscure = false}) {
+    return TextField(
+      controller: controller,
+      obscureText: isObscure,
+      cursorColor: Colors.black,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.grey),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey, width: 0.5),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 2),
         ),
       ),
     );
